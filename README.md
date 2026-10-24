@@ -2,9 +2,16 @@
   <img src="icon.png" width="160" alt="BuildBox icon">
 </p>
 
-# BuildBox — iPhone Compiler & Signer
+# BuildBox — iPhone Compiler & Signer (Self-Hosted Runner Fork)
 
-Compile on GitHub, sign on-device with your certificate, install. BuildBox runs the whole flow from your iPhone — no Mac, no PC, no uploading your IPAs to signing services.
+Compile on GitHub Actions (cloud or self-hosted macOS runners), sign on-device with your certificate, install. BuildBox runs the whole flow from your iPhone — no Mac, no PC, no uploading your IPAs to signing services.
+
+### Self-Hosted Runner Support (`jojirokuNet`)
+This fork adds first-class support for self-hosted GitHub Actions runners:
+- **Organization-level Runners**: Builds can be created under an organization (configured by default for `@jojirokuNet`).
+- **Targeted Runner Labels**: Defaults to `[self-hosted, macOS, ARM64]`, matching the `mac-mini` runner in `jojirokuNet`.
+- **Clean Workspace**: Automatically cleans the runner workspace between build runs.
+- **In-App Toggle & Settings**: Switch between cloud `macos-latest` and self-hosted runners directly from the Compile tab.
 
 ## What's new in 2.0.0
 
