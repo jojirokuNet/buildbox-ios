@@ -88,13 +88,13 @@ zip -qry "$DIR/BuildBox-unsigned.ipa" Payload
 echo "==> Done! Created: $DIR/BuildBox-unsigned.ipa"
 ls -lh "$DIR/BuildBox-unsigned.ipa"
 
-# 7. Mirror to iCloud Drive for instant iPhone availability
+# 7. Mirror to iCloud Drive for instant iPhone availability (local builds only)
 ICLOUD_BASE="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
-if [ -d "$ICLOUD_BASE" ]; then
+if [ -z "$CI" ] && [ -z "$GITHUB_ACTIONS" ] && [ -d "$ICLOUD_BASE" ]; then
     echo "==> 7. Syncing to iCloud Drive for iPhone..."
-    cp "$DIR/BuildBox-unsigned.ipa" "$ICLOUD_BASE/"
+    cp "$DIR/BuildBox-unsigned.ipa" "$ICLOUD_BASE/" 2>/dev/null || true
     if [ -d "$ICLOUD_BASE/Downloads" ]; then
-        cp "$DIR/BuildBox-unsigned.ipa" "$ICLOUD_BASE/Downloads/"
+        cp "$DIR/BuildBox-unsigned.ipa" "$ICLOUD_BASE/Downloads/" 2>/dev/null || true
     fi
     echo "  Synced: $ICLOUD_BASE/BuildBox-unsigned.ipa"
 fi
