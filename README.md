@@ -12,6 +12,7 @@ This fork adds first-class support for self-hosted GitHub Actions runners:
 - **Targeted Runner Labels**: Defaults to `[self-hosted, macOS, ARM64]`, matching the `mac-mini` runner in `jojirokuNet`.
 - **Clean Workspace**: Automatically cleans the runner workspace between build runs.
 - **In-App Toggle & Settings**: Switch between cloud `macos-latest` and self-hosted runners directly from the Compile tab.
+- **Automated IPA Build Workflow**: A GitHub Actions workflow (`.github/workflows/build-ipa.yml`) builds `BuildBox-unsigned.ipa` automatically via self-hosted `mac-mini` or GitHub cloud runners.
 
 ## What's new in 2.0.0
 

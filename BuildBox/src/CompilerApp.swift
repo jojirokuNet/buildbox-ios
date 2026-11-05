@@ -94,7 +94,7 @@ struct SplashView: View {
                         Text("BuildBox")
                             .font(.system(size: 36, weight: .bold))
                             .padding(.top, 14)
-                        Text("v2.0.0")
+                        Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.1.4")")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .padding(.top, 4)

@@ -1,0 +1,82 @@
+name: Build BuildBox IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner environment'
+        required: true
+        default: 'self-hosted'
+        type: choice
+        options:
+          - 'self-hosted'
+          - 'macos-15'
+          - 'macos-14'
+          - 'macos-latest'
+      create_release:
+        description: 'Publish as GitHub Release'
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - main
+    paths:
+      - 'BuildBox/**'
+      - '.github/workflows/build-ipa.yml'
+
+jobs:
+  build:
+    name: Build IPA
+    runs-on: ${{ (github.event_name == 'workflow_dispatch' && inputs.runner != 'self-hosted') && inputs.runner || fromJSON('["self-hosted", "macOS", "ARM64"]') }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Clean runner workspace
+        run: |
+          rm -rf BuildBox/build BuildBox/BuildBox-unsigned.ipa 2>/dev/null || true
+
+      - name: Select Xcode SDK
+        run: |
+          if [ -d "/Applications/Xcode.app" ]; then
+            sudo xcode-select -s /Applications/Xcode.app 2>/dev/null || true
+          fi
+          echo "Developer directory: $(xcode-select -p)"
+          xcrun --sdk iphoneos --show-sdk-path
+
+      - name: Compile and Package BuildBox IPA
+        run: |
+          chmod +x BuildBox/build_ipa.sh
+          ./BuildBox/build_ipa.sh
+
+      - name: Verify IPA
+        run: |
+          if [ ! -f "BuildBox/BuildBox-unsigned.ipa" ]; then
+            echo "ERROR: BuildBox/BuildBox-unsigned.ipa was not created!"
+            exit 1
+          fi
+          echo "BuildBox IPA created successfully:"
+          ls -lh BuildBox/BuildBox-unsigned.ipa
+          unzip -l BuildBox/BuildBox-unsigned.ipa | head -n 30
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BuildBox-unsigned
+          path: BuildBox/BuildBox-unsigned.ipa
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.create_release }}
+        run: |
+          TAG="v2.1.4-selfhosted-$(date +%Y%m%d%H%M%S)"
+          gh release create "$TAG" "BuildBox/BuildBox-unsigned.ipa" \
+            --title "BuildBox 2.1.4 (Self-Hosted)" \
+            --notes "Automated build of BuildBox 2.1.4 with self-hosted runner support configured for @jojirokuNet."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

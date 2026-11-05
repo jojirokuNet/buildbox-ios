@@ -1,0 +1,9 @@
+# Build artifacts
+BuildBox/build/
+*.ipa
+*.o
+*.dSYM/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
